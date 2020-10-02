@@ -9,7 +9,7 @@ now = str(date.today())
 
 base = 'https://wiki.project1999.com/'
 url = "https://wiki.project1999.com/Magelo_Green:Ibol"
-#url = input("Your Magelo URL: ")
+url = input("Your Magelo URL: ")
 r = requests.get(url)
 soup = BeautifulSoup(r.text, 'html.parser')
 
