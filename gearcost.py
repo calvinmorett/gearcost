@@ -9,14 +9,12 @@ now = str(date.today())
 
 base = 'https://wiki.project1999.com/'
 url = "https://wiki.project1999.com/Magelo_Green:Ibol"
-url = input("Your Magelo URL: ")
+# url = input("Your Magelo URL: ")
 r = requests.get(url)
 soup = BeautifulSoup(r.text, 'html.parser')
 
-
 mw = soup.find("div", {"class": "IventoryOuter"})
 connie = mw.findAll('a')
-
 
 inventory = []
 for link in connie:
@@ -25,11 +23,12 @@ for link in connie:
         item_name = urljoin(base, relative)
         inventory.append(item_name)
 
-        
 max_items = len(inventory)
 print(max_items)
 cycle_item_count = 0
 
+inventory_txt = open('inventory.txt', 'w+')
+    
 def find_sum(str1):
     add_30day = sum(map(int,re.findall('\d+',str1)))
     avg = add_30day/2
@@ -39,16 +38,20 @@ def find_sum(str1):
 
 print(" ")
 print(" ")
-print(" ")
-print("== Calculated by gearcost on " + now + " ==")
+gearcost__header = "== Calculated by gearcost on " + now + " =="
+print(gearcost__header)
+inventory_txt.write(str(gearcost__header)+'\n')
 
 def get_item_name(slot_number):
+        
     while slot_number <= max_items:
         print('  ')
+        inventory_txt.write('\n')
         # print(slot_number)
         item_name = str(inventory[slot_number]).replace('https://wiki.project1999.com/', '')
         item_name = item_name.replace('_', ' ')
         print(item_name)
+        inventory_txt.write(str(item_name)+'\n')
         
         cycle_item_url = str(inventory[slot_number])
         r_itemurl = requests.get(cycle_item_url)
@@ -63,13 +66,17 @@ def get_item_name(slot_number):
                     blue_item = price_tab_blue.find("td")
                     bmoney = blue_item.get_text().replace('±', '+')
                     bmoney = find_sum(bmoney)
-                    print("  Blue 30-Day Average: " + str(bmoney))  
+                    print("  Blue 30-Day Average: " + str(bmoney))
+                    inventory_txt.write('Blue:'+str(bmoney)+'\n')
+                    
                     price_green = soup_itemurl.find("div", {"id": "auc_Green"})
                     price_tab_green = price_green.find("table", {"class": "eoTable3"})
                     green_item = price_tab_green.find("td")
                     gmoney = green_item.get_text().replace('±', '+')
                     gmoney = find_sum(gmoney)
                     print("  Green 30-Day Average: " + str(gmoney))
+                    inventory_txt.write('Green:'+str(gmoney)+'\n')
+                    
                 if soup_itemurl.find("div", {"id": "auc_Blue"}) != None and soup_itemurl.find("div", {"id": "auc_Green"}) == None:
                     print('  Prices found for Blue, but,')
                     print('  No prices found for Green.')
@@ -79,6 +86,7 @@ def get_item_name(slot_number):
                     bmoney = blue_item.get_text().replace('±', '+')
                     bmoney = find_sum(bmoney)
                     print("  Blue 30-Day Average: " + str(bmoney))  
+                    inventory_txt.write('Blue:'+str(bmoney)+'\n')
                 if soup_itemurl.find("div", {"id": "auc_Blue"}) == None and soup_itemurl.find("div", {"id": "auc_Green"}) != None:
                     print('  Prices found for Green, but,')
                     print('  No prices found for Blue.')
@@ -87,10 +95,8 @@ def get_item_name(slot_number):
                     green_item = price_tab_green.find("td")
                     gmoney = green_item.get_text().replace('±', '+')
                     gmoney = find_sum(gmoney)
-                    print("  Green 30-Day Average: "+ str(gmoney))    
-                    
-                    
-                    
+                    print("  Green 30-Day Average: "+ str(gmoney))  
+                    inventory_txt.write('Green:'+str(gmoney)+'\n')  
             else:
                 print('No Prices Found')
 
@@ -108,11 +114,12 @@ def get_item_name(slot_number):
         # quest
         related_quest = soup_itemurl.find("span", {"id": "Related_quests"})
         related_quest__header = related_quest.text.strip()
+        
         #drops from
         drops_from = soup_itemurl.find("span", {"id": "Drops_From"})
         drops_from__header = related_quest.text.strip()
-        #Player_crafted
         
+        #Player_crafted
         player_crafted = soup_itemurl.find("span", {"id": "Player_crafted"})
         player_crafted__header = player_crafted.text.strip()
         
@@ -127,6 +134,7 @@ def get_item_name(slot_number):
                 
         if 'DROP' in item_stats:
             print('  ' + 'NO DROP')
+            inventory_txt.write('NO DROP'+'\n')  
             # print('Find this items Quest or Location')
 #            if 'Quests' in item__page:
 #                print(related_quest__header,collection_list)
@@ -148,6 +156,21 @@ def get_item_name(slot_number):
             break
         else:
             slot_number += 1
+        
+        
+        ####################################
+        # Todo:
+        # calculate how many no drop items there are....
+        # calculate the prices for blue
+        # calculate the prices for green
+        ####################################
+        # Ibol's Inventory Value:
+        # --------------------------
+        # Blue: 500p
+        # Green: 800p
+        # x5 NO DROP items
+        # --------------------------
+        ####################################
 
 try:
     get_item_name(cycle_item_count)
