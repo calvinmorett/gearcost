@@ -9,7 +9,14 @@ now = str(date.today())
 
 base = 'https://wiki.project1999.com/'
 url = "https://wiki.project1999.com/Magelo_Green:Ibol"
-# url = input("Your Magelo URL: ")
+url = input("Your Magelo URL: ")
+if 'Blue' in url:
+    charname = url.replace('https://wiki.project1999.com/Magelo_Blue:', '')
+elif 'Green' in url:
+    charname = url.replace('https://wiki.project1999.com/Magelo_Green:', '')
+elif 'Red' in url:
+    print('We need a new red server! Gearcost doesnt calc red prices, yet.')
+
 r = requests.get(url)
 soup = BeautifulSoup(r.text, 'html.parser')
 
@@ -28,26 +35,105 @@ print(max_items)
 cycle_item_count = 0
 
 inventory_txt = open('inventory.txt', 'w+')
-    
+
+############ Find Sum
 def find_sum(str1):
     add_30day = sum(map(int,re.findall('\d+',str1)))
     avg = add_30day/2
     return avg
     if find_sum == 0:
         print('  None sold in the last 30 days')
+############
 
 print(" ")
 print(" ")
-gearcost__header = "== Calculated by gearcost on " + now + " =="
+gearcost__header = "== Calculated by gearcost on " + now + " ==\n"
 print(gearcost__header)
-inventory_txt.write(str(gearcost__header)+'\n')
+inventory_txt.write(str(gearcost__header))
+
+def thegearcost():
+
+    ####################################
+    # Todo:
+    # calculate how many no drop items there are....
+    # calculate the prices for blue
+    # calculate the prices for green
+    ####################################
+    # Ibol's Inventory Value:
+    # --------------------------
+    # Blue: 500p
+    # Green: 800p
+    # x5 NO DROP items
+    # --------------------------
+    ####################################
+    markdown_newline = '  '
+    global char_header
+    global gc_blue
+    global gc_green
+    global no_drop_tally
+    char_header = "\n" + charname+"`s Inventory Value\n--------------------------  "
+    print(char_header)
+    inventory_txt.write(char_header)
+
+    #global blue__gearcost $$
+    #print(blue__gearcost)
+    gc_blue = find_sum(str(blue__gearcost))
+    print(gc_blue, markdown_newline)
+    inventory_txt.write('\nBlue GearCost: ' + str(gc_blue) + '  ')
+
+    #global green__gearcost $$
+    #print(green__gearcost)
+    gc_green = find_sum(str(green__gearcost))
+    print(gc_green, markdown_newline)
+    inventory_txt.write('\nGreen GearCost: ' + str(gc_green) + '  ')
+
+    # no drop talley $$ no_drop_tally + NO DROP items
+    no_drop_tally = len(no___drop)
+    printed_nd_talley_terminal = "x" + str(no_drop_tally) + " NO DROP items\n--------------------------  "
+    printed_nd_talley = "\nx" + str(no_drop_tally) + " NO DROP items\n--------------------------  "
+    print(printed_nd_talley_terminal)
+    inventory_txt.write(str(printed_nd_talley))
+
+####################### wiki 
+def wikicode():
+    wiki_code = open('wikicode.txt', 'w+')
+    blank_section_header = '==  =='
+    newline = '\n'
+
+    gearcost_code = str(blank_section_header) + str(newline) + '{| ' + str(newline) + '|- ' + str(newline) + '! scope="col" style="width: 222px; text-align: left;" | ' + str(charname) + '`s Inventory' + str(newline) + '! scope="col" style="text-align: left;" | Value ' + str(newline) + '|- ' + str(newline) + '| Blue || ' + str(gc_blue) + str(newline) + '|- ' + str(newline) + '| Green || ' + str(gc_green) + str(newline) + '|- ' + str(newline) + '| NO DROP || ' + str(no_drop_tally) + str(newline) + '|} '
+    
+    wiki_code.write(str(gearcost_code))
+    print('...Done!')
+
+def ask_wikicode():
+    print(" ")
+    code_answer = input('Would you like a nice table-code for the wiki? [yes] / [no] ')
+    if code_answer == 'yes':
+        print('Creating wikicode.txt...')
+        wikicode()
+    elif code_answer == 'no':
+        print('See ya!')
+
+####################### wiki 
+
+no___drop = []
+blue__gearcost = []
+green__gearcost = []
 
 def get_item_name(slot_number):
+    #    global blue__gearcost
+    #    global green__gearcost
+    #    global no___drop
+    #    global no_drop_tally
         
     while slot_number <= max_items:
-        print('  ')
+        if slot_number == max_items:
+            thegearcost()
+            ask_wikicode()
+            
+        print(' ')
         inventory_txt.write('\n')
-        # print(slot_number)
+        
         item_name = str(inventory[slot_number]).replace('https://wiki.project1999.com/', '')
         item_name = item_name.replace('_', ' ')
         print(item_name)
@@ -58,6 +144,24 @@ def get_item_name(slot_number):
         soup_itemurl = BeautifulSoup(r_itemurl.text, 'html.parser')
 
         def get_item_price():
+            global blue_nerd
+            global green_nerd
+            
+
+            def green_nerd():
+                green__report_terminal = '  Green 30-Day Average: ' + str(gmoney)
+                green__report = '  Green 30-Day Average: ' + str(gmoney) + '\n'
+                print(green__report_terminal)
+                inventory_txt.write(green__report)
+                green__gearcost.append(green__report)
+                    
+            def blue_nerd():
+                blue__report_terminal = '  Blue 30-Day Average: ' + str(bmoney)
+                blue__report = '  Blue 30-Day Average: ' + str(bmoney) + '\n'
+                print(blue__report_terminal)
+                inventory_txt.write(blue__report)
+                blue__gearcost.append(blue__report)
+                
             if soup_itemurl.find("div", {"id": "auc_Blue"}) != None or soup_itemurl.find("div", {"id": "auc_Green"}) != None:
                 price_div = soup_itemurl.find("div", {"class": "auctrackerbox"})
                 if soup_itemurl.find("div", {"id": "auc_Blue"}) != None and soup_itemurl.find("div", {"id": "auc_Green"}) != None:
@@ -66,37 +170,43 @@ def get_item_name(slot_number):
                     blue_item = price_tab_blue.find("td")
                     bmoney = blue_item.get_text().replace('±', '+')
                     bmoney = find_sum(bmoney)
-                    print("  Blue 30-Day Average: " + str(bmoney))
-                    inventory_txt.write('Blue:'+str(bmoney)+'\n')
+                    
+                    blue_nerd()
                     
                     price_green = soup_itemurl.find("div", {"id": "auc_Green"})
                     price_tab_green = price_green.find("table", {"class": "eoTable3"})
                     green_item = price_tab_green.find("td")
                     gmoney = green_item.get_text().replace('±', '+')
                     gmoney = find_sum(gmoney)
-                    print("  Green 30-Day Average: " + str(gmoney))
-                    inventory_txt.write('Green:'+str(gmoney)+'\n')
+                    
+                    green_nerd()
                     
                 if soup_itemurl.find("div", {"id": "auc_Blue"}) != None and soup_itemurl.find("div", {"id": "auc_Green"}) == None:
-                    print('  Prices found for Blue, but,')
-                    print('  No prices found for Green.')
+                    blue_no_green_prices = '  Prices found for Blue, but, No prices found for Green.'
+                    print(blue_no_green_prices)
+                    inventory_txt.write(blue_no_green_prices)
+
                     price_blue = soup_itemurl.find("div", {"id": "auc_Blue"})
                     price_tab_blue = price_blue.find("table", {"class": "eoTable3"})
                     blue_item = price_tab_blue.find("td")
                     bmoney = blue_item.get_text().replace('±', '+')
                     bmoney = find_sum(bmoney)
-                    print("  Blue 30-Day Average: " + str(bmoney))  
-                    inventory_txt.write('Blue:'+str(bmoney)+'\n')
+                    
+                    blue_nerd()
+                    
                 if soup_itemurl.find("div", {"id": "auc_Blue"}) == None and soup_itemurl.find("div", {"id": "auc_Green"}) != None:
-                    print('  Prices found for Green, but,')
-                    print('  No prices found for Blue.')
+                    green_no_blue_prices = '  Prices found for Green, but, No prices found for Blue.'
+                    print(green_no_blue_prices)
+                    
                     price_green = soup_itemurl.find("div", {"id": "auc_Green"})
                     price_tab_green = price_green.find("table", {"class": "eoTable3"})
                     green_item = price_tab_green.find("td")
                     gmoney = green_item.get_text().replace('±', '+')
                     gmoney = find_sum(gmoney)
-                    print("  Green 30-Day Average: "+ str(gmoney))  
-                    inventory_txt.write('Green:'+str(gmoney)+'\n')  
+                    
+                    green_nerd()
+                    
+                    inventory_txt.write(green_no_blue_prices)
             else:
                 print('No Prices Found')
 
@@ -133,8 +243,9 @@ def get_item_name(slot_number):
                 # print(collection_list)
                 
         if 'DROP' in item_stats:
+            no___drop.append('nodrop')
             print('  ' + 'NO DROP')
-            inventory_txt.write('NO DROP'+'\n')  
+            inventory_txt.write('  NO DROP'+'\n')  
             # print('Find this items Quest or Location')
 #            if 'Quests' in item__page:
 #                print(related_quest__header,collection_list)
@@ -151,29 +262,14 @@ def get_item_name(slot_number):
             get_item_name(slot_number)
         else:
             get_item_price()
-            
+
         if slot_number == max_items:
             break
         else:
             slot_number += 1
-        
-        
-        ####################################
-        # Todo:
-        # calculate how many no drop items there are....
-        # calculate the prices for blue
-        # calculate the prices for green
-        ####################################
-        # Ibol's Inventory Value:
-        # --------------------------
-        # Blue: 500p
-        # Green: 800p
-        # x5 NO DROP items
-        # --------------------------
-        ####################################
 
 try:
     get_item_name(cycle_item_count)
-except IndexError: 
+except IndexError:
     pass
 
