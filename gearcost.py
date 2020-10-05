@@ -78,14 +78,14 @@ def thegearcost():
     #global blue__gearcost $$
     #print(blue__gearcost)
     gc_blue = find_sum(str(blue__gearcost))
-    print(gc_blue, markdown_newline)
-    inventory_txt.write('\nBlue GearCost: ' + str(gc_blue) + '  ')
+    print('Blue: ' + str(gc_blue), markdown_newline)
+    inventory_txt.write('\nBlue: ' + str(gc_blue) + '  ')
 
     #global green__gearcost $$
     #print(green__gearcost)
     gc_green = find_sum(str(green__gearcost))
-    print(gc_green, markdown_newline)
-    inventory_txt.write('\nGreen GearCost: ' + str(gc_green) + '  ')
+    print('Green: ' + str(gc_blue), markdown_newline)
+    inventory_txt.write('\nGreen: ' + str(gc_green) + '  ')
 
     # no drop talley $$ no_drop_tally + NO DROP items
     no_drop_tally = len(no___drop)
