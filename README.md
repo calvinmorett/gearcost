@@ -9,7 +9,7 @@ from a project1999 magelo page, you can run this script to calculate the prices 
 2. install libraries below
 3. execute code, i.e. '> python3 gearcost.py'
 4. input your magelo url from p1999
-5. get outputs, it will ask if you want a wiki code: type [yes] or [no].
+5. get terminal and .txt file outputs, it will ask if you want a wiki code: type [yes] or [no].
 6. post on wiki
 
 # Libraries used:
