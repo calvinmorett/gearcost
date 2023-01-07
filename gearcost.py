@@ -2,23 +2,41 @@ from bs4 import BeautifulSoup
 import requests
 from datetime import date
 from urllib.parse import urljoin
-import sympy
+from sympy import *
 import re 
 
+# import ssl
+# ssl._create_default_https_context = ssl._create_unverified_context
+
+import urllib3
+http = urllib3.PoolManager()
+
+###################################################
 now = str(date.today())
 
 base = 'https://wiki.project1999.com/'
 url = "https://wiki.project1999.com/Magelo_Green:Ibol"
-url = input("Your Magelo URL: ")
+# url = input("Your Magelo URL: ")
 if 'Blue' in url:
     charname = url.replace('https://wiki.project1999.com/Magelo_Blue:', '')
 elif 'Green' in url:
     charname = url.replace('https://wiki.project1999.com/Magelo_Green:', '')
 elif 'Red' in url:
     print('We need a new red server! Gearcost doesnt calc red prices, yet.')
+    
+###################################################
 
-r = requests.get(url)
+# Create an SSL context with unverified certificate checks
+context = urllib3.util.ssl_.create_urllib3_context()
+
+# Use the SSL context to make an HTTPS request
+r = http.request('GET', url, ssl_context=context)
+
+###################################################
+#r = requests.get(url)
 soup = BeautifulSoup(r.text, 'html.parser')
+###################################################
+
 
 mw = soup.find("div", {"class": "IventoryOuter"})
 connie = mw.findAll('a')

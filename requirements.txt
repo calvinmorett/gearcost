@@ -1,0 +1,8 @@
+###### Requirements without Version Specifiers ######
+beautifulsoup4
+requests
+datetime
+urllib3
+sympy
+regex
+ssl
