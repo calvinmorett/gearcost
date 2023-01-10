@@ -65,8 +65,8 @@ import re
 now = str(date.today())
 
 base = 'http://wiki.project1999.com/'
-url = "http://wiki.project1999.com/Magelo_Green:Ibol"
-# url = input("Your Magelo URL: ")
+# url = "http://wiki.project1999.com/Magelo_Green:Ibol"
+url = input("Your Magelo URL: ")
 
 if 'Blue' in url:
     charname = url.replace('http://wiki.project1999.com/Magelo_Blue:', '')
@@ -103,10 +103,11 @@ inventory_txt = open('inventory.txt', 'w+')
 
 def find_sum(str1):
     add_30day = sum(map(int,re.findall('\d+',str1)))
-    avg = add_30day/2
-    if find_sum == 0:
+    ## debug print
+    #print(add_30day,'debug')
+    if add_30day == 0:
         print('None sold in the last 30 days')
-    return avg
+    return add_30day
 
 print(" ")
 print(" ")
@@ -143,7 +144,7 @@ def thegearcost():
     # print for debugging:
     #print(green__gearcost)
     gc_green = find_sum(str(green__gearcost))
-    print('Green: ' + str(gc_blue), markdown_newline)
+    print('Green: ' + str(gc_green), markdown_newline)
     # yield here...
     inventory_txt.write('\nGreen: ' + str(gc_green) + '  ') # can remove any txt related items, for frontend code
 
@@ -237,9 +238,12 @@ def get_item_name(slot_number):
                 if soup_itemurl.find("div", {"id": "auc_Blue"}) != None and soup_itemurl.find("div", {"id": "auc_Green"}) != None:
                     price_blue = soup_itemurl.find("div", {"id": "auc_Blue"})
                     price_tab_blue = price_blue.find("table", {"class": "eoTable3"})
-                    blue_item = price_tab_blue.find("td")
-                    bmoney = blue_item.get_text().replace('±', '+')
-                    bmoney = find_sum(bmoney)
+                    blue_item = price_tab_blue.find("td")                   
+                    blue_item = blue_item.get_text().replace('±', '+')    
+                    blue_item = blue_item.split("+")[0]
+                    ## debug print
+                    #print(blue_item, 'debug............')
+                    bmoney = find_sum(blue_item)
                     
                     # these global functions handle the outputs you will see within the terminal and txt file
                     blue_nerd()
@@ -247,8 +251,11 @@ def get_item_name(slot_number):
                     price_green = soup_itemurl.find("div", {"id": "auc_Green"})
                     price_tab_green = price_green.find("table", {"class": "eoTable3"})
                     green_item = price_tab_green.find("td")
-                    gmoney = green_item.get_text().replace('±', '+')
-                    gmoney = find_sum(gmoney)
+                    green_item = green_item.get_text().replace('±', '+')  
+                    green_item = green_item.split("+")[0]
+                    ## debug print
+                    #print(green_item, 'debug............')
+                    gmoney = find_sum(green_item)
 
                     # these global functions handle the outputs you will see within the terminal and txt file
                     green_nerd()
