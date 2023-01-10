@@ -1,5 +1,6 @@
 
  ![](/gearcost_small.png)
+![image](https://user-images.githubusercontent.com/11654917/211480628-c8f7eba1-159b-4f5f-aa93-52fa18f9d012.png)
 
 # gearcost
 input inventory > webscrape inventory pages for items price > output calculate full cost of inventory
