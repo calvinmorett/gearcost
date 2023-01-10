@@ -1,47 +1,81 @@
+# def gcscrape(url):
+#     # code to set up initial scraping process
+
+#     # create a while loop to continue scraping until there are no more items in inventory
+#     while inventory:
+#         for item in inventory:
+#             # code to scrape individual item page
+
+#             # remove item from inventory list after it has been scraped
+#             inventory.remove(item)
+
+#         # code to scrape next page of inventory, if there is one
+#         # update the inventory list with the items on the next page
+
+
+
 from bs4 import BeautifulSoup
 import requests
 from datetime import date
 from urllib.parse import urljoin
 from sympy import *
-import re 
+import re
 
-# import ssl
-# ssl._create_default_https_context = ssl._create_unverified_context
+# to fix ssl issues, install them using pip
+# pip install --trusted-host=pypi.org --trusted-host=files.pythonhosted.org --user pip-system-certs'
 
-import urllib3
-http = urllib3.PoolManager()
-
-###################################################
+"""
+    Calculates the average cost of a list of inventory items, from a Character's Magelo URL.
+    
+    variable definitions:
+        now (string) = capture the current date of the initial webscraping
+        base (string) = the url of the base of the website, this is useful when doing a join later into the file, can call this back, for repeatable patterns w/in the URL.
+        url = the profile that contains the inventory of items that will be averaged, and calculated. Total cost, and per item a 30-day average.
+              intended to be used as an 'input' for a user to easily paste a URL and get results.
+        
+        r = makes a request to the wiki profile page
+        soup = takes the request and parses the html document
+        mw = find the div where the class matches, then use `connie`
+        connie = will find, all the links contained within `mw`
+        
+        inventory (list, array) = empty list, that eventually is appended to. `connie` collects all links, then per link, appends them to this list. 
+        max_items = the number of links contained within the inventory array/list. cycle_item_count uses this # to break the webscraping.
+        cycle_item_count = serves as a counter, to break the script so it doesn't run infinitely. after running through the code, it will add a 1 to the count/counter.
+                           it is the number of items we've gone through within the inventory. It starts on 0, and if it hits the `max_items` number, it will stop/break the code.
+                     
+        inventory_txt = this will open a text file for us to export each output to.
+                
+    Returns:
+        @BUG - https://github.com/calvinmorett/gearcost/issues/5
+        find_sum: returns a 30 day average, or 0 if there is none sold within that time period. it does not work as intended when running the script 1/10/22. 
+        y: ...
+    
+"""
 now = str(date.today())
 
-base = 'https://wiki.project1999.com/'
-url = "https://wiki.project1999.com/Magelo_Green:Ibol"
+base = 'http://wiki.project1999.com/'
+url = "http://wiki.project1999.com/Magelo_Green:Ibol"
 # url = input("Your Magelo URL: ")
+
 if 'Blue' in url:
-    charname = url.replace('https://wiki.project1999.com/Magelo_Blue:', '')
+    charname = url.replace('http://wiki.project1999.com/Magelo_Blue:', '')
 elif 'Green' in url:
-    charname = url.replace('https://wiki.project1999.com/Magelo_Green:', '')
+    charname = url.replace('http://wiki.project1999.com/Magelo_Green:', '')
 elif 'Red' in url:
-    print('We need a new red server! Gearcost doesnt calc red prices, yet.')
-    
-###################################################
+    print('Red is dead.')
 
-# Create an SSL context with unverified certificate checks
-context = urllib3.util.ssl_.create_urllib3_context()
-
-# Use the SSL context to make an HTTPS request
-r = http.request('GET', url, ssl_context=context)
-
-###################################################
-#r = requests.get(url)
+# code to set up initial scraping process  
+r = requests.get(url)
 soup = BeautifulSoup(r.text, 'html.parser')
-###################################################
 
-
+inventory = []
 mw = soup.find("div", {"class": "IventoryOuter"})
 connie = mw.findAll('a')
 
-inventory = []
+#   the actual html a:link within the inventory on the page is coded like ...
+#             <a href="/Chipped_Bone_Bracelet">
+#             This is why it's important to `urljoin` the base w/ this link
+#             `/Chipped` turns into `https://www.x.com/Chipped`
 for link in connie:
     if link.has_attr('href'):
         relative = link['href']
@@ -49,19 +83,19 @@ for link in connie:
         inventory.append(item_name)
 
 max_items = len(inventory)
-print(max_items)
+print('items = ',max_items)
 cycle_item_count = 0
 
 inventory_txt = open('inventory.txt', 'w+')
 
-############ Find Sum
+# @BUG - Not working as intended. 30d average online displays 42, script displays 22. Not actually taking the 30d average, taking an all time average.
 def find_sum(str1):
     add_30day = sum(map(int,re.findall('\d+',str1)))
     avg = add_30day/2
-    return avg
     if find_sum == 0:
-        print('  None sold in the last 30 days')
-############
+        print('None sold in the last 30 days')
+            
+    return avg
 
 print(" ")
 print(" ")
@@ -112,25 +146,26 @@ def thegearcost():
     print(printed_nd_talley_terminal)
     inventory_txt.write(str(printed_nd_talley))
 
+            ### commenting out wikicode
 ####################### wiki 
-def wikicode():
-    wiki_code = open('wikicode.txt', 'w+')
-    blank_section_header = '==  =='
-    newline = '\n'
+# def wikicode():
+#     wiki_code = open('wikicode.txt', 'w+')
+#     blank_section_header = '==  =='
+#     newline = '\n'
 
-    gearcost_code = str(blank_section_header) + str(newline) + '{| ' + str(newline) + '|- ' + str(newline) + '! scope="col" style="width: 222px; text-align: left;" | ' + str(charname) + '`s Inventory' + str(newline) + '! scope="col" style="text-align: left;" | Value ' + str(newline) + '|- ' + str(newline) + '| Blue || ' + str(gc_blue) + str(newline) + '|- ' + str(newline) + '| Green || ' + str(gc_green) + str(newline) + '|- ' + str(newline) + '| NO DROP || ' + str(no_drop_tally) + str(newline) + '|} '
+#     gearcost_code = str(blank_section_header) + str(newline) + '{| ' + str(newline) + '|- ' + str(newline) + '! scope="col" style="width: 222px; text-align: left;" | ' + str(charname) + '`s Inventory' + str(newline) + '! scope="col" style="text-align: left;" | Value ' + str(newline) + '|- ' + str(newline) + '| Blue || ' + str(gc_blue) + str(newline) + '|- ' + str(newline) + '| Green || ' + str(gc_green) + str(newline) + '|- ' + str(newline) + '| NO DROP || ' + str(no_drop_tally) + str(newline) + '|} '
     
-    wiki_code.write(str(gearcost_code))
-    print('...Done!')
+#     wiki_code.write(str(gearcost_code))
+#     print('...Done!')
 
-def ask_wikicode():
-    print(" ")
-    code_answer = input('Would you like a nice table-code for the wiki? [yes] / [no] ')
-    if code_answer == 'yes':
-        print('Creating wikicode.txt...')
-        wikicode()
-    elif code_answer == 'no':
-        print('See ya!')
+# def ask_wikicode():
+#     print(" ")
+#     code_answer = input('Would you like a nice table-code for the wiki? [yes] / [no] ')
+#     if code_answer == 'yes':
+#         print('Creating wikicode.txt...')
+#         wikicode()
+#     elif code_answer == 'no':
+#         print('See ya!')
 
 ####################### wiki 
 
@@ -147,12 +182,13 @@ def get_item_name(slot_number):
     while slot_number <= max_items:
         if slot_number == max_items:
             thegearcost()
-            ask_wikicode()
+            ### commenting out wikicode
+            # ask_wikicode()
             
         print(' ')
         inventory_txt.write('\n')
         
-        item_name = str(inventory[slot_number]).replace('https://wiki.project1999.com/', '')
+        item_name = str(inventory[slot_number]).replace('http://wiki.project1999.com/', '')
         item_name = item_name.replace('_', ' ')
         print(item_name)
         inventory_txt.write(str(item_name)+'\n')
