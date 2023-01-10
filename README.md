@@ -1,8 +1,8 @@
 # wat
 ![image](https://user-images.githubusercontent.com/11654917/211480628-c8f7eba1-159b-4f5f-aa93-52fa18f9d012.png)
 
----
-https://user-images.githubusercontent.com/11654917/211483604-abfb4c12-5596-4bad-9ed0-d64bb8197e22.mov
+![ezgif com-gif-maker (2)](https://user-images.githubusercontent.com/11654917/211484874-c1b8711e-63ef-4aa5-946b-720d36378a1d.gif)
+
 ---
 
 ![](/gearcost_small.png)
