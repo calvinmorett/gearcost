@@ -26,3 +26,7 @@ from a project1999 magelo page, you can run this script to calculate the prices 
 - datetime
 - re
 - sympy
+
+---
+
+![2023-01-10 01-57-05](https://user-images.githubusercontent.com/11654917/211483147-b9c49131-525a-4ecc-bebe-c6d47cca279b.gif)
